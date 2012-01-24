@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.networktables.NetworkTableKeyNotDefined;
 import edu.wpi.first.wpilibj.smartdashboard.SendablePIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -44,9 +45,9 @@ public class WCDBot extends IterativeRobot {
     
     SendablePIDController controller;
     
-    double Kp;
-    double Ki;
-    double Kd;
+    double Kp = 1;
+    double Ki = 0;
+    double Kd = 0;
     
     // TODO: implement gear switching (PWM ports 5 left and 6 right)
     
@@ -63,7 +64,7 @@ public class WCDBot extends IterativeRobot {
         controller = new SendablePIDController(Kp, Ki, Kd, gyro, new PIDOutput() {
 
             public void pidWrite(double output) {
-                drive.arcadeDrive(-0.75, output);
+                drive.arcadeDrive(0, output);
             }
             
         }, 0.005);
@@ -84,6 +85,7 @@ public class WCDBot extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
+        System.out.println("aoijwegao");
         drive.tankDrive(gamepad, 2, gamepad, 4);
         
         
@@ -97,6 +99,7 @@ public class WCDBot extends IterativeRobot {
         }
         
         if(gamepad.getRawButton(6) && gamepad.getRawButton(8)) {
+            controller.setSetpoint(20);
             controller.enable();
         }
         else if(gamepad.getRawButton(5) && gamepad.getRawButton(7)) {
