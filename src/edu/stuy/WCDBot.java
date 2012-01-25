@@ -45,9 +45,9 @@ public class WCDBot extends IterativeRobot {
     
     SendablePIDController controller;
     
-    double Kp = 1;
-    double Ki = 0;
-    double Kd = 0;
+    double Kp = 0.035;
+    double Ki = 0.0005;
+    double Kd = 1.0;
     
     // TODO: implement gear switching (PWM ports 5 left and 6 right)
     
@@ -61,10 +61,11 @@ public class WCDBot extends IterativeRobot {
         rightShift = new Servo(RIGHT_GEAR_SHIFT);
         gamepad = new Joystick(GAMEPAD_PORT);
         gyro = new Gyro(GYRO_CHANNEL);
+        gyro.setSensitivity(0.007);
         controller = new SendablePIDController(Kp, Ki, Kd, gyro, new PIDOutput() {
 
             public void pidWrite(double output) {
-                drive.arcadeDrive(0, output);
+                drive.arcadeDrive(-1, -output);
             }
             
         }, 0.005);
@@ -85,10 +86,10 @@ public class WCDBot extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
-        System.out.println("aoijwegao");
+        drive.setSafetyEnabled(false);
+
         drive.tankDrive(gamepad, 2, gamepad, 4);
-        
-        
+
         if (gamepad.getRawButton(9)) {
             leftShift.set(0);
             rightShift.set(0);
@@ -98,11 +99,11 @@ public class WCDBot extends IterativeRobot {
             rightShift.set(1);
         }
         
-        if(gamepad.getRawButton(6) && gamepad.getRawButton(8)) {
-            controller.setSetpoint(20);
+        if(gamepad.getRawButton(6)) {
+            controller.setSetpoint(0);
             controller.enable();
         }
-        else if(gamepad.getRawButton(5) && gamepad.getRawButton(7)) {
+        else if(gamepad.getRawButton(5)) {
             controller.disable();
             drive.arcadeDrive(0, 0);
         }
@@ -114,6 +115,21 @@ public class WCDBot extends IterativeRobot {
         if (gamepad.getRawButton(2)) {
             System.out.println(gyro.getAngle());
         }
+
+        SmartDashboard.putDouble("Gyro Angle", gyro.getAngle());
+
+        /*
+        if(gamepad.getRawButton(4)){
+            drive.arcadeDrive(-0.5, 0);
+        }
+
+        else if(gamepad.getRawButton(3)){
+            drive.arcadeDrive(0.5, 0);
+        }
+
+        else{
+            drive.arcadeDrive(0,0);
+        }*/
     }
     
 }
